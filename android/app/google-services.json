@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "971833702888",
+    "project_id": "smart-shop-e1782",
+    "storage_bucket": "smart-shop-e1782.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971833702888:android:30b86114770e2495b58c5d",
+        "android_client_info": {
+          "package_name": "com.example.admin_smart_shop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "971833702888-6vs6uuldu1qtp9if1sjdbdt5q113jcvg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO1qXRoLMR46PpT_Lu6P4JlAn_dpTYrPc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971833702888-6vs6uuldu1qtp9if1sjdbdt5q113jcvg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "971833702888-27bdn11ap8clert8vagh0udpp5598b3m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.adminSmartShop.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971833702888:android:b7285a501b5641e6b58c5d",
+        "android_client_info": {
+          "package_name": "com.example.smart_shop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "971833702888-bs0msql69n9kea22j3e0lgpjlm3a98s8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smart_shop",
+            "certificate_hash": "2d9e1b95972fa946a7675df31e178833ba9700d5"
+          }
+        },
+        {
+          "client_id": "971833702888-mpaqr5ef87jfamfrgc6q3ikaam6q80ee.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smart_shop",
+            "certificate_hash": "d212c6104e15ee30cc6eaf0cafcef0445c210485"
+          }
+        },
+        {
+          "client_id": "971833702888-6vs6uuldu1qtp9if1sjdbdt5q113jcvg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO1qXRoLMR46PpT_Lu6P4JlAn_dpTYrPc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971833702888-6vs6uuldu1qtp9if1sjdbdt5q113jcvg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "971833702888-27bdn11ap8clert8vagh0udpp5598b3m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.adminSmartShop.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

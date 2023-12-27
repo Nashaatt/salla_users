@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/home/zeroit-30/flutter"
-export "FLUTTER_APPLICATION_PATH=/home/zeroit-30/Music/smart_shop_users"
+export "FLUTTER_ROOT=/opt/homebrew/Caskroom/flutter/2.10.5/flutter"
+export "FLUTTER_APPLICATION_PATH=/Users/zit-14/Documents/flutter-project/smart-shop-app"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib/main.dart"
 export "FLUTTER_BUILD_DIR=build"

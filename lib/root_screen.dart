@@ -13,7 +13,6 @@ import 'SCREENS/home_screen.dart';
 import 'SCREENS/profile_screen.dart';
 import 'SCREENS/search_screen.dart';
 
-
 class RootScreen extends StatefulWidget {
   static const routeName = "/RootScreen";
   const RootScreen({super.key});
@@ -43,7 +42,8 @@ class _RootScreenState extends State<RootScreen> {
     final productsProvider =
         Provider.of<ProductProvider>(context, listen: false);
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
+    final addressProvider =
+        Provider.of<AddressProvider>(context, listen: false);
     final wishListProvider =
         Provider.of<WishListProvider>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -52,6 +52,7 @@ class _RootScreenState extends State<RootScreen> {
       Future.wait({
         productsProvider.fetchProducts(),
         productsProvider.fetchProductsHorizontal(),
+        productsProvider.fetchProductsSecondHorizontal(),
         productsProvider.fetchProductsVertical(),
         userProvider.fetchUserInfo(),
       });

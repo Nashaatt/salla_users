@@ -103,6 +103,7 @@ class HomePage extends StatelessWidget {
               ),
 
               /////////////////////////////////////
+              ///
 
               Visibility(
                 visible:
@@ -124,6 +125,53 @@ class HomePage extends StatelessWidget {
                                 .getProductproductsHorizontal[index],
                             child: LatestArrivalProductWidget());
                       }),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              ////////////Latest Arrival ///////////////////
+              ///////////////////////////////////////
+              const SizedBox(
+                height: 5,
+              ),
+              Visibility(
+                visible:
+                    productsProvider.getProductproductsHorizontal.isNotEmpty,
+                child: const TitlesTextWidget(
+                  label: "Latest Arrival",
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+
+              /////////////////////////////////////
+
+              Visibility(
+                visible: productsProvider
+                    .productsproductsSecondHorizontal.isNotEmpty,
+                child: SizedBox(
+                  height: 340,
+                  width: double.infinity,
+                  child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: productsProvider
+                                .productsproductsSecondHorizontal.length <
+                            10
+                        ? productsProvider
+                            .productsproductsSecondHorizontal.length
+                        : 10,
+                    itemBuilder: (context, index) {
+                      return ChangeNotifierProvider.value(
+                        value: productsProvider
+                            .productsproductsSecondHorizontal[index],
+                        child: LatestArrivalProductWidget(),
+                      );
+                    },
+                  ),
                 ),
               ),
               const SizedBox(

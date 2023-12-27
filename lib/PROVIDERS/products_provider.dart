@@ -7,11 +7,18 @@ class ProductProvider with ChangeNotifier {
   List<ProductModel> get getProduct {
     return products;
   }
-   List<ProductModel> productsproductsHorizontal = [];
+
+  List<ProductModel> productsproductsHorizontal = [];
+  List<ProductModel> productsproductsSecondHorizontal = [];
   List<ProductModel> get getProductproductsHorizontal {
     return productsproductsHorizontal;
   }
-   List<ProductModel> productsproductsVertical = [];
+
+  List<ProductModel> get getProductproductsSecondHorizontal {
+    return productsproductsSecondHorizontal;
+  }
+
+  List<ProductModel> productsproductsVertical = [];
   List<ProductModel> get getproductsproductsVertical {
     return productsproductsVertical;
   }
@@ -45,7 +52,7 @@ class ProductProvider with ChangeNotifier {
   Future<List<ProductModel>> fetchProducts() async {
     try {
       await productDb
-          .orderBy("createdAt",descending: false)
+          .orderBy("createdAt", descending: false)
           .get()
           .then((productSnapshot) {
         products.clear();
@@ -69,25 +76,25 @@ class ProductProvider with ChangeNotifier {
         for (var element in snapshot.docs) {
           products.insert(0, ProductModel.fromFirestore(element));
         }
-       
+
         return products;
       });
     } catch (e) {
       rethrow;
     }
   }
- 
- 
+
   Future<List<ProductModel>> fetchProductsHorizontal() async {
     try {
       await productDb
-          .where("productDirection",isEqualTo: "Latest Arrival")
+          .where("productDirection", isEqualTo: "Latest Arrival One")
           .get()
           .then((productSnapshot) {
         productsproductsHorizontal.clear();
         // products = []
         for (var element in productSnapshot.docs) {
-          productsproductsHorizontal.insert(0, ProductModel.fromFirestore(element));
+          productsproductsHorizontal.insert(
+              0, ProductModel.fromFirestore(element));
         }
       });
       notifyListeners();
@@ -95,16 +102,39 @@ class ProductProvider with ChangeNotifier {
     } catch (e) {
       rethrow;
     }
-  }  Future<List<ProductModel>> fetchProductsVertical() async {
+  }
+
+  Future<List<ProductModel>> fetchProductsSecondHorizontal() async {
     try {
       await productDb
-          .where("productDirection",isEqualTo: "Recommanded")
+          .where("productDirection", isEqualTo: "Latest Arrival Two")
+          .get()
+          .then((productSnapshot) {
+        productsproductsSecondHorizontal.clear();
+        // products = []
+        for (var element in productSnapshot.docs) {
+          productsproductsSecondHorizontal.insert(
+              0, ProductModel.fromFirestore(element));
+        }
+      });
+      notifyListeners();
+      return productsproductsSecondHorizontal;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<ProductModel>> fetchProductsVertical() async {
+    try {
+      await productDb
+          .where("productDirection", isEqualTo: "Recommanded")
           .get()
           .then((productSnapshot) {
         productsproductsVertical.clear();
         // products = []
         for (var element in productSnapshot.docs) {
-          productsproductsVertical.insert(0, ProductModel.fromFirestore(element));
+          productsproductsVertical.insert(
+              0, ProductModel.fromFirestore(element));
         }
       });
       notifyListeners();
@@ -113,8 +143,6 @@ class ProductProvider with ChangeNotifier {
       rethrow;
     }
   }
-
-  
 }
 
 

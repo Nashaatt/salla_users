@@ -50,44 +50,39 @@ class _AddressScreenState extends State<SelectAddressScreen> {
             ),
           )
         : Scaffold(
-            appBar: AppBar(
-              title: const Text("Select Delivery Address"),
-              centerTitle: true,
-            ),
             body: LoadingManager(
               isLoading: isLoading,
               child: SingleChildScrollView(
                 child: Column(
                   children: [
                     const SizedBox(
-                      height: 0,
+                      height: 40,
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // AppNameTextWidget(
-                          //   text:
-                          //       "Cart   [ ${cartProvider.getCartItems.length} ]   Products",
-                          //   fontSize: 15,
-                          //   fontWeight: FontWeight.bold,
-                          // ),
-                          IconButton(
-                            onPressed: () async {
-                              await cartProvider.clearCartFromFirestore();
-                              cartProvider.clearLocalCart();
-                            },
-                            icon: const Icon(
-                              Icons.clear_all,
-                              color: AppColors.goldenColor,
-                            ),
+                          AppNameTextWidget(
+                            text: "Select a Delivery Address",
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
                           ),
+                          // IconButton(
+                          //   onPressed: () async {
+                          //     await cartProvider.clearCartFromFirestore();
+                          //     cartProvider.clearLocalCart();
+                          //   },
+                          //   icon: const Icon(
+                          //     Icons.clear_all,
+                          //     color: AppColors.goldenColor,
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),
                     Container(
-                      height: cartProvider.getCartItems.length * 118,
+                      height: cartProvider.getCartItems.length * 160,
                       child: ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: cartProvider.getCartItems.length,
@@ -114,12 +109,9 @@ class _AddressScreenState extends State<SelectAddressScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
                     addressProvider.getaddress.isNotEmpty
                         ? Container(
-                            height: addressProvider.getaddress.length * 70,
+                            height: addressProvider.getaddress.length * 130,
                             child: ListView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: addressProvider.getaddress.length,
@@ -137,7 +129,7 @@ class _AddressScreenState extends State<SelectAddressScreen> {
                       height: 40,
                     ),
                     Container(
-                      margin: EdgeInsets.only(left: 20, right: 20),
+                      margin: EdgeInsets.only(left: 30, right: 30),
                       child: InkWell(
                         onTap: () {
                           Navigator.push(
@@ -153,19 +145,21 @@ class _AddressScreenState extends State<SelectAddressScreen> {
                               child: Text(
                                 "Add a New Address",
                                 style: TextStyle(
-                                    fontSize: 18, color: Colors.black),
+                                  fontSize: 18,
+                                ),
                               ),
                             ),
                             Icon(
                               Icons.arrow_forward_ios,
                               color: AppColors.goldenColor,
+                              size: 18,
                             )
                           ],
                         ),
                       ),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 40,
                     ),
                     GestureDetector(
                       onTap: () async {
@@ -194,7 +188,7 @@ class _AddressScreenState extends State<SelectAddressScreen> {
                                 color: AppColors.goldenColor),
                             child: const Text(
                               "Cash on Delivery",
-                              style: TextStyle(fontSize: 18),
+                              style: TextStyle(fontSize: 16),
                             ),
                           )
                         ],
@@ -278,7 +272,8 @@ class _AddressWidgetState extends State<AddressWidget> {
 
     return ListTile(
       leading: Container(
-        margin: const EdgeInsets.only(bottom: 30),
+        width: 20,
+        margin: const EdgeInsets.only(bottom: 40, left: 10),
         child: Radio<AddressModel>(
           fillColor:
               MaterialStateColor.resolveWith((states) => AppColors.goldenColor),

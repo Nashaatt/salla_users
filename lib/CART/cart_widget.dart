@@ -52,11 +52,10 @@ class CartWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             //////////////////////////////////Title\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
                             SizedBox(
-                              width: 140,
+                              width: MediaQuery.of(context).size.width * .49,
                               child: TitlesTextWidget(
                                 label: getCurrentProduct.productTitle,
                                 fontSize: 15,

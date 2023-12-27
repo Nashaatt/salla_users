@@ -98,6 +98,7 @@ import 'package:provider/provider.dart';
 import '../CONSTANTS/app_colors.dart';
 import '../CONSTANTS/validator.dart';
 import '../PROVIDERS/address_provider.dart';
+import 'app_name.dart';
 import 'loading_manager.dart';
 
 class AddressEditScreen extends StatefulWidget {
@@ -181,23 +182,23 @@ class _AddressEditScreenState extends State<AddressEditScreen> {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
-            backgroundColor: Color.fromARGB(255, 216, 216, 216),
-            appBar: AppBar(
-              automaticallyImplyLeading: true,
-              title: Text(
-                "New address",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: "League",
-                ),
-              ),
-              leading: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Icon(Icons.arrow_back)),
-            ),
+
+            // appBar: AppBar(
+            //   automaticallyImplyLeading: true,
+            //   title: Text(
+            //     "New address",
+            //     style: TextStyle(
+            //       fontSize: 17,
+            //       fontWeight: FontWeight.bold,
+            //       fontFamily: "League",
+            //     ),
+            //   ),
+            //   leading: GestureDetector(
+            //       onTap: () {
+            //         Navigator.pop(context);
+            //       },
+            //       child: Icon(Icons.arrow_back)),
+            // ),
             body: LoadingManager(
                 isLoading: isLoading,
                 child: SingleChildScrollView(
@@ -206,45 +207,68 @@ class _AddressEditScreenState extends State<AddressEditScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: 20,
+                        const SizedBox(
+                          height: 40,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 140,
-                              width: MediaQuery.of(context).size.width * .9,
-                              // width: 330,
-                              color: Colors.red,
-                              child: Image.asset(
-                                "IMG/map.jpeg",
-                                fit: BoxFit.fill,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              AppNameTextWidget(
+                                text: "Add New Address",
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          // width: 340,
-                          child: Card(
-                            elevation: 10,
-                            child: ListTile(
-                              leading: Icon(Icons.location_on),
-                              title: Text(
-                                "Area",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Text("AI Mushrif"),
-                              trailing: Text(
-                                "Change",
-                                style:
-                                    TextStyle(color: Colors.red, fontSize: 15),
-                              ),
-                            ),
+                              // IconButton(
+                              //   onPressed: () async {
+                              //     await cartProvider.clearCartFromFirestore();
+                              //     cartProvider.clearLocalCart();
+                              //   },
+                              //   icon: const Icon(
+                              //     Icons.clear_all,
+                              //     color: AppColors.goldenColor,
+                              //   ),
+                              // ),
+                            ],
                           ),
                         ),
-                        SizedBox(
-                          height: 10,
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     Container(
+                        //       height: 140,
+                        //       width: MediaQuery.of(context).size.width * .9,
+                        //       // width: 330,
+                        //       color: Colors.red,
+                        //       child: Image.asset(
+                        //         "IMG/map.jpeg",
+                        //         fit: BoxFit.fill,
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                        // Container(
+                        //   // width: 340,
+                        //   child: Card(
+                        //     elevation: 10,
+                        //     child: ListTile(
+                        //       leading: Icon(Icons.location_on),
+                        //       title: Text(
+                        //         "Area",
+                        //         style: TextStyle(fontWeight: FontWeight.bold),
+                        //       ),
+                        //       subtitle: Text("AI Mushrif"),
+                        //       trailing: Text(
+                        //         "Change",
+                        //         style:
+                        //             TextStyle(color: Colors.red, fontSize: 15),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        const SizedBox(
+                          height: 20,
                         ),
                         Form(
                           key: _formkey,
@@ -293,7 +317,7 @@ class _AddressEditScreenState extends State<AddressEditScreen> {
                                 },
                               ),
                               const SizedBox(
-                                height: 10.0,
+                                height: 20,
                               ),
 
                               TextFormField(
@@ -336,7 +360,7 @@ class _AddressEditScreenState extends State<AddressEditScreen> {
                                 // },
                               ),
                               const SizedBox(
-                                height: 10.0,
+                                height: 20,
                               ),
                               // Row(
                               //   children: [
@@ -390,7 +414,7 @@ class _AddressEditScreenState extends State<AddressEditScreen> {
                                 },
                               ),
                               const SizedBox(
-                                height: 10.0,
+                                height: 20,
                               ),
                               // Row(
                               //   children: [
@@ -494,7 +518,7 @@ class _AddressEditScreenState extends State<AddressEditScreen> {
                                 // },
                               ),
                               const SizedBox(
-                                height: 10.0,
+                                height: 20,
                               ),
                               // Row(
                               //   children: [
@@ -551,7 +575,7 @@ class _AddressEditScreenState extends State<AddressEditScreen> {
                                 // },
                               ),
                               const SizedBox(
-                                height: 10.0,
+                                height: 20,
                               ),
                               // Row(
                               //   children: [
@@ -609,7 +633,7 @@ class _AddressEditScreenState extends State<AddressEditScreen> {
                               //   // },
                               // ),
                               SizedBox(
-                                height: 20,
+                                height: 120,
                               ),
                               GestureDetector(
                                 onTap: () async {
@@ -661,7 +685,7 @@ class _AddressEditScreenState extends State<AddressEditScreen> {
                                   children: [
                                     Container(
                                       alignment: Alignment.center,
-                                      height: 44,
+                                      height: 55,
                                       width: MediaQuery.of(context).size.width *
                                           0.9,
                                       decoration: BoxDecoration(
@@ -669,7 +693,7 @@ class _AddressEditScreenState extends State<AddressEditScreen> {
                                         color: AppColors.goldenColor,
                                       ),
                                       child: const Text(
-                                        " Save address",
+                                        " Submit ",
                                         style: TextStyle(
                                             fontSize: 16, color: Colors.white),
                                       ),

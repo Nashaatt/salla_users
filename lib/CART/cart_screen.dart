@@ -48,7 +48,7 @@ class _CartScreenState extends State<CartScreen> {
               child: Column(
                 children: [
                   const SizedBox(
-                    height: 20,
+                    height: 30,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -100,9 +100,8 @@ class _CartScreenState extends State<CartScreen> {
             //     userProvider: userProvider,
             //   );
             // }),
-          );
+            );
   }
 
 //////////////// Order Method /////////////////////
-  
 }

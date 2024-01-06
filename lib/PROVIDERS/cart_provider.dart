@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:smart_shop/CONSTANTS/app_colors.dart';
 import 'package:smart_shop/MODELS/cart_model.dart';
 import 'package:smart_shop/PROVIDERS/products_provider.dart';
 import 'package:smart_shop/SERVICES/my_app_functions.dart';
@@ -17,7 +15,7 @@ class CartProvider with ChangeNotifier {
 
   final userstDb = FirebaseFirestore.instance.collection("users");
   final _auth = FirebaseAuth.instance;
-////////////////////////////////////////////// Firebase \ \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+////////////////////////////////////////////// Firebase \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   Future<void> addToCartFirebase({
     required String productId,
     required int qty,
@@ -25,11 +23,8 @@ class CartProvider with ChangeNotifier {
   }) async {
     final User? user = _auth.currentUser;
     if (user == null) {
-      MyAppFunctions.showErrorOrWarningDialog(
-        context: context,
-        subtitle: "Please login first",
-        fct: () {},
-      );
+      MyAppFunctions()
+          .globalMassage(context: context, message: "Please Login First");
       return;
     }
     final uid = user.uid;
@@ -45,10 +40,8 @@ class CartProvider with ChangeNotifier {
         ])
       });
       await fetchCart();
-      Fluttertoast.showToast(
-          msg: "Item has been added",
-          backgroundColor: AppColors.goldenColor,
-          textColor: Colors.white);
+      MyAppFunctions()
+          .globalMassage(context: context, message: "Item Added To Cart");
     } catch (e) {
       rethrow;
     }
@@ -84,6 +77,7 @@ class CartProvider with ChangeNotifier {
   Future<void> removeCartItemFromFirestor(
       {required String cartId,
       required String productId,
+      required context,
       required int qty}) async {
     final User? user = _auth.currentUser;
     try {
@@ -98,16 +92,14 @@ class CartProvider with ChangeNotifier {
       });
       // await fetchCart();
       _cartItems.remove(productId);
-      Fluttertoast.showToast(
-          msg: "Item has been Removed",
-          backgroundColor: AppColors.goldenColor,
-          textColor: Colors.white);
+      MyAppFunctions().globalMassage(
+          context: context, message: "Item Removed Successfully");
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> clearCartFromFirestore() async {
+  Future<void> clearCartFromFirestore({required context}) async {
     final User? user = _auth.currentUser;
     try {
       await userstDb.doc(user!.uid).update({
@@ -115,10 +107,8 @@ class CartProvider with ChangeNotifier {
       });
       // await fetchCart();
       _cartItems.clear();
-      Fluttertoast.showToast(
-          msg: "You cleared All Cart !",
-          backgroundColor: AppColors.goldenColor,
-          textColor: Colors.white);
+      MyAppFunctions()
+          .globalMassage(context: context, message: "Cart Cleard Successfully");
     } catch (e) {
       rethrow;
     }

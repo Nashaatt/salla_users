@@ -1,10 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:smart_shop/CONSTANTS/app_colors.dart';
 import 'package:smart_shop/CONSTANTS/validator.dart';
-import 'package:smart_shop/WIDGETS/app_name.dart';
-import 'package:smart_shop/WIDGETS/subtitles.dart';
-import 'package:smart_shop/WIDGETS/titles.dart';
+import 'package:smart_shop/WIDGETS/text_widget.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   static const routeName = '/ForgotPasswordScreen';
@@ -17,6 +16,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   late final TextEditingController _emailController;
   late final _formKey = GlobalKey<FormState>();
+  final auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -35,28 +35,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _forgetPassFCT() async {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
-    if (isValid) {}
+    if (isValid) {
+      auth
+          .sendPasswordResetEmail(email: _emailController.text.toString())
+          .then((value) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("We have Sent you email to recover")),
+        );
+      }).onError((error, stackTrace) {
+        print(error.toString());
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const AppNameTextWidget(
-          fontSize: 25,
-          text: "Smart Shopify",
-          fontWeight: FontWeight.normal,
-        ),
-      ),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
         },
         child: SafeArea(
           child: ListView(
-            // shrinkWrap: true,
             padding: const EdgeInsets.symmetric(horizontal: 24),
             physics: const BouncingScrollPhysics(),
             children: [
@@ -78,7 +79,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               const SubtitleTextWidget(
                 label:
-                    'Please enter the email address you\'d like your password reset information sent to',
+                    'Please enter the email address you\'d like your  \n password reset information sent to',
                 fontSize: 14,
               ),
               const SizedBox(
@@ -94,7 +95,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
                         hintText: 'example@email.com',
                         prefixIcon: Container(
                           padding: const EdgeInsets.all(12),

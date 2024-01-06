@@ -1,21 +1,22 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, constant_pattern_never_matches_value_type
 
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_shop/AUTH/login.dart';
 import 'package:smart_shop/CONSTANTS/app_colors.dart';
 import 'package:smart_shop/SERVICES/my_app_functions.dart';
-import 'package:smart_shop/WIDGETS/app_name.dart';
-import 'package:smart_shop/WIDGETS/image_pickerr.dart';
-import 'package:smart_shop/WIDGETS/loading_manager.dart';
-
+import 'package:smart_shop/WIDGETS/circular_widget.dart';
+import 'package:smart_shop/WIDGETS/picker_widget.dart';
+import 'package:smart_shop/WIDGETS/text_widget.dart';
 import 'package:smart_shop/root_screen.dart';
 
 import '../CONSTANTS/validator.dart';
@@ -31,9 +32,13 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  ///////// OTP ///////////////
+  TextEditingController otpController = TextEditingController();
+  GlobalKey formkey = GlobalKey<FormState>();
   EmailOTP myAuth = EmailOTP();
+
   late final TextEditingController _nameController,
-      emailController,
+      _emailController,
       _passwordController,
       _repeatPasswordController;
 
@@ -49,28 +54,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? userImageUrl;
   bool obscureText = true;
 
-  ////////////////////////////////  Send OTP  \\\\\\\\\\\\\\\\\\\\\\\\\\
-  void sendOTP() async {
-    myAuth.setConfig(
+  /////////////////  Send Otp  //////////////////////////////////
+
+  Future<void> sendOTP() async {
+    await myAuth.setConfig(
         appEmail: "me@rohitchouhan.com",
         appName: "Email OTP",
-        userEmail: emailController.text,
-        otpLength: 4,
+        userEmail: _emailController.text,
+        otpLength: 3,
         otpType: OTPType.digitsOnly);
     if (await myAuth.sendOTP() == true) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("OTP Sent"),
+          content: Text("OTP Sent Check Your Email"),
         ),
       );
     }
   }
-  /////////////////////////////////////////////////////////////////////\\
+
+  /////////////////////////////////////////////////////////////////////
 
   @override
   void initState() {
     _nameController = TextEditingController();
-    emailController = TextEditingController();
+    _emailController = TextEditingController();
     _passwordController = TextEditingController();
     _repeatPasswordController = TextEditingController();
     // Focus Nodes
@@ -85,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     if (mounted) {
       _nameController.dispose();
-      emailController.dispose();
+      _emailController.dispose();
       _passwordController.dispose();
       _repeatPasswordController.dispose();
       // Focus Nodes
@@ -97,15 +104,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  /////////////////////  Sign In Button  \\\\\\\\\\\\\\\\\\\\\\\\
+
   Future<void> _registerFCT() async {
     if (_pickedImage == null) {
-      MyAppFunctions.showErrorOrWarningDialog(
-        context: context,
-        subtitle: "make sure you pick image",
-        fct: () {},
-      );
+      MyAppFunctions()
+          .globalMassage(context: context, message: "Please, Pick an Image");
       return;
     }
+
     final isValid = _formkey.currentState!.validate();
     FocusScope.of(context).unfocus();
 
@@ -114,9 +121,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         setState(() {
           isLoading = true;
         });
+        /////////////////////
 
         await auth.createUserWithEmailAndPassword(
-          email: emailController.text.trim(),
+          email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
         final User? user = auth.currentUser;
@@ -124,47 +132,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
         final ref = FirebaseStorage.instance
             .ref()
             .child("usersImage")
-            .child("${emailController.text}.jpg");
+            .child("${_emailController.text}.jpg");
         await ref.putFile(File(_pickedImage!.path));
         userImageUrl = await ref.getDownloadURL();
         await FirebaseFirestore.instance.collection('users').doc(uid).set({
           "userId": uid,
           "userName": _nameController.text,
           "userImage": userImageUrl,
-          "userEmail": emailController.text.toLowerCase(),
+          "userEmail": _emailController.text.toLowerCase(),
           "userCart": [],
           "userWish": [],
-          "Address":[],
+          "Address": [],
           "createdAt": Timestamp.now(),
         });
 
         if (!mounted) return;
-        // sendOTP();
-        Navigator.pushNamed(context, RootScreen.routeName);
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: ((context) => const RootScreen())));
       } on FirebaseException catch (error) {
-        await MyAppFunctions.showErrorOrWarningDialog(
-          context: context,
-          subtitle: error.message.toString(),
-          fct: () {},
-        );
+        print("Firebase Error : ${e.toString()}");
       } catch (error) {
-        await MyAppFunctions.showErrorOrWarningDialog(
-          context: context,
-          subtitle: error.toString(),
-          fct: () {},
-        );
+        print(error.toString());
       } finally {
         setState(() {
           isLoading = false;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Account Created Successfully"),
-          ));
+          MyAppFunctions().globalMassage(
+            context: context,
+            message: "Account Created Successfully",
+          );
         });
       }
     }
   }
 
-  // Image Picker Method
+  //////////////////////////////////// Image Picker Method
   Future<void> localImagePicker() async {
     final ImagePicker imagePicker = ImagePicker();
     await MyAppFunctions.imagePickerDialog(
@@ -185,7 +186,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+  //////////////////////////////////////////////////////////////////////////////////////  \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -194,7 +195,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: Color.fromARGB(255, 216, 216, 216),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         body: LoadingManager(
           isLoading: isLoading,
           child: SingleChildScrollView(
@@ -203,41 +204,74 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  /////////APP NAME ///////////////
-                  const AppNameTextWidget(
-                    fontSize: 25,
-                    text: "SALLA",
-                    fontWeight: FontWeight.bold,
-                  ),
-                  const SizedBox(
-                    height: 10,
+                  SizedBox(
+                    height: size.height * 0.07,
                   ),
 
-                  ///////////////IMage Piccker /////////////////
-                  SizedBox(
-                    height: size.width * 0.3,
-                    width: size.width * 0.3,
-                    child: ImagePickerr(
-                      pickedImage: _pickedImage,
-                      function: () async {
-                        await localImagePicker();
-                      },
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.grey.shade300,
+                        border: Border.all(color: Colors.grey.shade300)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // ignore: prefer_const_constructors
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const AppNameTextWidget(
+                              fontSize: 23,
+                              text: "Sign Up",
+                              fontWeight: FontWeight.bold,
+                            ),
+                            const SizedBox(
+                              height: 13,
+                            ),
+                            AppNameTextWidget(
+                              fontSize: 12,
+                              text:
+                                  "welcome to Salla the best store, \n your best store",
+                              fontWeight: FontWeight.normal,
+                              baseColor: AppColors.goldenColor,
+                              highColor: Colors.green.shade100,
+                            ),
+                          ],
+                        ),
+
+                        //////////////////////////////////////////////////
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        //////////////////IMage Piccker /////////////////
+                        SizedBox(
+                          // height: size.width * 0.3,
+                          // width: size.width * 0.3,
+                          child: ImagePickerr(
+                            pickedImage: _pickedImage,
+                            function: () async {
+                              await localImagePicker();
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  //////////////////////////////////  ///  Form Form Form  //////////////////////////////////////////////////////////////////
 
                   Form(
                     key: _formkey,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
                         TextFormField(
                           controller: _nameController,
                           focusNode: _nameFocusNode,
                           style: const TextStyle(
-                            color: Colors.white,
                             fontSize: 15,
                             decorationThickness: 0,
                           ),
@@ -251,12 +285,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            fillColor: Colors.black,
+                            fillColor: Colors.grey.shade200,
                             filled: true,
                             hintText: 'Full Name',
                             hintStyle: const TextStyle(
                               color: AppColors.goldenColor,
-                              fontSize: 10,
+                              fontSize: 14,
                             ),
                             prefixIcon: const Icon(
                               Icons.person,
@@ -275,10 +309,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           height: 5.0,
                         ),
                         TextFormField(
-                          controller: emailController,
+                          controller: _emailController,
                           focusNode: _emailFocusNode,
                           style: const TextStyle(
-                            color: Colors.white,
                             fontSize: 15,
                             decorationThickness: 0,
                           ),
@@ -292,11 +325,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            fillColor: Colors.black,
+                            fillColor: Colors.grey.shade200,
                             filled: true,
                             hintText: "Email Addresss",
                             hintStyle: const TextStyle(
-                                color: AppColors.goldenColor, fontSize: 10),
+                                color: AppColors.goldenColor, fontSize: 14),
                             prefixIcon: const Icon(
                               IconlyLight.message,
                               color: AppColors.goldenColor,
@@ -313,11 +346,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(
                           height: 5.0,
                         ),
+                        ////////////////////////////////////////////////////////////////////////////////////////
                         TextFormField(
                           controller: _passwordController,
                           focusNode: _passwordFocusNode,
                           style: const TextStyle(
-                            color: Colors.white,
                             fontSize: 15,
                             decorationThickness: 0,
                           ),
@@ -332,12 +365,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            fillColor: Colors.black,
+                            fillColor: Colors.grey.shade200,
                             filled: true,
                             hintText: "Password",
                             hintStyle: const TextStyle(
                               color: AppColors.goldenColor,
-                              fontSize: 10,
+                              fontSize: 14,
                             ),
                             prefixIcon: const Icon(
                               IconlyLight.lock,
@@ -371,7 +404,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           controller: _repeatPasswordController,
                           focusNode: _repeatPasswordFocusNode,
                           style: const TextStyle(
-                            color: Colors.white,
                             fontSize: 15,
                             decorationThickness: 0,
                           ),
@@ -386,11 +418,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            fillColor: Colors.black,
+                            fillColor: Colors.grey.shade200,
                             filled: true,
                             hintText: "Repeat password",
                             hintStyle: const TextStyle(
-                                color: AppColors.goldenColor, fontSize: 10),
+                                color: AppColors.goldenColor, fontSize: 14),
                             prefixIcon: const Icon(
                               IconlyLight.lock,
                               color: AppColors.goldenColor,
@@ -408,9 +440,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ),
                           ),
-                          onFieldSubmitted: (value) async {
-                            await _registerFCT();
-                          },
+                          // onFieldSubmitted: (value) async {
+                          //   await _registerFCT();
+                          // },
                           validator: (value) {
                             return MyValidators.repeatPasswordValidator(
                               value: value,
@@ -428,7 +460,89 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           height: 50,
                           child: ElevatedButton.icon(
                             onPressed: () async {
-                              await _registerFCT();
+                              await sendOTP().then((value) async {
+                                return showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      contentPadding: const EdgeInsets.all(20),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ////////// TEXT FIELD ///////////
+                                          TextFormField(
+                                            controller: otpController,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter
+                                                  .digitsOnly,
+                                            ],
+                                            keyboardType: TextInputType.number,
+                                            decoration: InputDecoration(
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              hintText:
+                                                  "OTP Sent, Check Your Email",
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          //////////////////  Verify OTP  ////////////////
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  AppColors.goldenColor,
+                                            ),
+                                            onPressed: () async {
+                                              if (await myAuth.verifyOTP(
+                                                      otp:
+                                                          otpController.text) ==
+                                                  true) {
+                                                /////////////  True One   /////////////////////
+                                                await _registerFCT();
+                                              } else {
+                                                /////////////  False One   ////////////////////
+
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content:
+                                                        Text("OTP is In-Valid"),
+                                                  ),
+                                                );
+                                                return;
+                                              }
+                                            },
+                                            child: const Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.email,
+                                                  size: 20,
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                TitlesTextWidget(
+                                                  label: 'Verity Email',
+                                                  fontSize: 18,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              });
                             },
                             style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
@@ -438,8 +552,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             icon: const Icon(Icons.login_outlined),
                             label: const Text(
-                              "Sign in",
-                              style: TextStyle(fontSize: 13),
+                              "Sign up",
+                              style: TextStyle(fontSize: 16),
                             ),
                           ),
                         ),
@@ -457,16 +571,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             TextButton(
                                 onPressed: () {
                                   Navigator.pushNamed(
-                                      context, LoginScreen.routName);
+                                    context,
+                                    LoginScreen.routName,
+                                  );
                                 },
                                 child: const Text(
                                   "Log in",
                                   style: TextStyle(
-                                      fontSize: 15,
-                                      decoration: TextDecoration.underline),
+                                    fontSize: 15,
+                                    decoration: TextDecoration.underline,
+                                  ),
                                 )),
                           ],
                         ),
+                        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                       ],
                     ),
                   ),

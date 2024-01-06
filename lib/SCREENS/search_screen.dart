@@ -2,15 +2,16 @@
 
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:provider/provider.dart';
+import 'package:smart_shop/CONSTANTS/app_constans.dart';
 import 'package:smart_shop/MODELS/product_model.dart';
 import 'package:smart_shop/PROVIDERS/products_provider.dart';
-import 'package:smart_shop/WIDGETS/app_name.dart';
-import 'package:smart_shop/WIDGETS/product_widget.dart';
-import 'package:smart_shop/WIDGETS/titles.dart';
+import 'package:smart_shop/WIDGETS/ITEM%20WIDGETS/search_widget.dart';
+import 'package:smart_shop/WIDGETS/category_widget.dart';
+import 'package:smart_shop/WIDGETS/text_widget.dart';
 
 import '../CONSTANTS/app_colors.dart';
-
 
 class SearchScreen extends StatefulWidget {
   static const routName = "/SearchScreen";
@@ -21,6 +22,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  static List perviousSerches = [];
   TextEditingController searchController = TextEditingController();
 
   List<ProductModel> productListSearch = [];
@@ -42,9 +44,10 @@ class _SearchScreenState extends State<SearchScreen> {
         body: productList.isEmpty
             ? const Center(
                 child: AppNameTextWidget(
-                    text: "Unfortunately ,Not Found Products",
-                    fontSize: 20,
-                    fontWeight: FontWeight.normal),
+                  text: "Unfortunately ,Not Found Products",
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal,
+                ),
               )
             : StreamBuilder<List<ProductModel>>(
                 stream: productsProvider.fetchproductStream(),
@@ -64,7 +67,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   } else if (snapshot.data == null) {
                     return const Center(
                       child: SelectableText(
-                        "No Products Found has Added",
+                        "Not Found one",
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -78,72 +81,125 @@ class _SearchScreenState extends State<SearchScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(
-                          height: 30,
-                        ),
-
-                        const AppNameTextWidget(
-                          text: "SALLA",
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-
-                        const SizedBox(
-                          height: 20,
+                          height: 50,
                         ),
                         TextField(
                           controller: searchController,
                           style: const TextStyle(
                             decorationThickness: 0,
-                            color: Colors.white,
                           ),
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             hintText: "Search",
                             contentPadding: const EdgeInsets.all(10),
                             filled: true,
-                            fillColor: AppColors.goldenColor,
-                            focusedBorder: OutlineInputBorder(
+                            fillColor: Colors.grey.shade200,
+                            focusedBorder: const OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: Colors.white,
                                 width: 2,
                               ),
                             ),
-                            enabledBorder: OutlineInputBorder(),
-                            suffixIcon: const Icon(
+                            enabledBorder: const OutlineInputBorder(),
+                            suffixIcon: searchController.text == null
+                                ? null
+                                : InkWell(
+                                    onTap: () {
+                                      searchController.clear();
+                                    },
+                                    child: const Icon(
+                                      Icons.cancel,
+                                    ),
+                                  ),
+                            prefixIcon: const Icon(
                               Icons.search,
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                             hintStyle: const TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          // onChanged: (value) {
-                          //   setState(() {
-                          //     productListSearch = productsProvider.searchQuery(
-                          //       searchText: searchController.text,
-                          //     );
-                          //   });
+                          // onChanged: (pure) {
+                          //   setState(() {});
                           // },
+                          onEditingComplete: () {
+                            perviousSerches.add(searchController.text);
+                          },
                           onSubmitted: (value) {
                             setState(() {
+                              //// Serach by Category
                               productListSearch = productsProvider.searchQuery(
+                                searchText: searchController.text,
+                              );
+
+                              //// Search by Title
+                              productListSearch = productsProvider.searchTitle(
                                 searchText: searchController.text,
                               );
                             });
                           },
                         ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+
+                        ////////////////////// End of Search TextField
+                        //////////////////////////// Pervious Searech
+
+                        SizedBox(
+                          height: 35,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: perviousSerches.length,
+                            itemBuilder: (context, index) => previousSearchItem(
+                              index: index,
+                              productProvider: productsProvider,
+                            ),
+                          ),
+                        ),
 
                         const SizedBox(
-                          height: 20,
+                          height: 7,
                         ),
-                        ////////
 
+                        /////////////////////////////////// Search by Category
+                        Visibility(
+                          visible:
+                              searchController.text.isNotEmpty ? false : true,
+                          child: const Padding(
+                            padding: EdgeInsets.only(bottom: 10.0),
+                            child: TitlesTextWidget(
+                              label: "Suggestions",
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        ///////////////////////////////////////////////////
+                        Visibility(
+                          visible:
+                              searchController.text.isNotEmpty ? false : true,
+                          child: SizedBox(
+                            height: 55,
+                            width: double.infinity,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: AppConsts.categoryList.length,
+                                itemBuilder: (context, index) {
+                                  return CategorySearchWidget(
+                                    name: AppConsts.categoryList[index].name,
+                                  );
+                                }),
+                          ),
+                        ),
+                        ////////////////////////
                         if (searchController.text.isNotEmpty &&
                             productListSearch.isEmpty) ...[
                           const Center(
                             child: TitlesTextWidget(
-                              label: "Not Products Found.....",
+                              label: "Not Found.....",
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                             ),
@@ -155,11 +211,11 @@ class _SearchScreenState extends State<SearchScreen> {
                             itemCount: searchController.text.isNotEmpty
                                 ? productListSearch.length
                                 : productList.length,
-                            crossAxisCount: 2,
+                            crossAxisCount: 1,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
                             builder: (context, index) {
-                              return ProductWidget(
+                              return SearchWidget(
                                 productId: searchController.text.isNotEmpty
                                     ? productListSearch[index]
                                         .productID //////////// Start list in search
@@ -175,7 +231,59 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     );
   }
+
+  previousSearchItem(
+      {required int index, required ProductProvider productProvider}) {
+    return InkWell(
+      onTap: () {},
+      child: Dismissible(
+        key: GlobalKey(),
+        onDismissed: (DismissDirection dir) {
+          perviousSerches.removeAt(index);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.goldenColor),
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.green.shade200,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  IconlyLight.timeCircle,
+                  size: 19,
+                  color: Colors.green.shade700,
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                TitlesTextWidget(
+                  label: perviousSerches[index],
+                  fontSize: 15,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.green.shade700,
+                ),
+                const SizedBox(
+                  width: 14,
+                ),
+                Icon(
+                  Icons.cancel_schedule_send,
+                  size: 19,
+                  color: Colors.green.shade700,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
+
+
 
 // productList[index].productID
 ///productListSearch[index].productID

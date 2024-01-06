@@ -1,17 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:smart_shop/AUTH/forot_password_screen.dart';
-
+import 'package:smart_shop/AUTH/google_btn.dart';
 import 'package:smart_shop/CONSTANTS/app_colors.dart';
 import 'package:smart_shop/SERVICES/my_app_functions.dart';
-import 'package:smart_shop/WIDGETS/Auth%20Widgts/google_btn.dart';
-import 'package:smart_shop/WIDGETS/app_name.dart';
-import 'package:smart_shop/WIDGETS/loading_manager.dart';
-import 'package:smart_shop/WIDGETS/subtitles.dart';
-import 'package:smart_shop/WIDGETS/titles.dart';
-
+import 'package:smart_shop/WIDGETS/circular_widget.dart';
+import 'package:smart_shop/WIDGETS/text_widget.dart';
 import 'package:smart_shop/root_screen.dart';
 
 import '../CONSTANTS/validator.dart';
@@ -72,26 +67,14 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, RootScreen.routeName);
-      } on FirebaseException catch (error) {
-        // ignore: use_build_context_synchronously
-        await MyAppFunctions.showErrorOrWarningDialog(
-          context: context,
-          subtitle: error.message.toString(),
-          fct: () {
-            Fluttertoast.showToast(
-              msg: "Loged in Successfully",
-              backgroundColor: Colors.white,
-              textColor: Colors.black,
-              fontSize: 12,
-            );
-          },
-        );
+      } on FirebaseException catch (e) {
+        if (e.code == 'invalid-credential') {
+          MyAppFunctions()
+              .globalMassage(context: context, message: "in-valid Email");
+          print("ERROR Login : ${e.toString()}");
+        }
       } catch (error) {
-        await MyAppFunctions.showErrorOrWarningDialog(
-          context: context,
-          subtitle: error.toString(),
-          fct: () {},
-        );
+        print("ERROR Login : ${error.toString()}");
       } finally {
         setState(() {
           isLoading = false;
@@ -102,12 +85,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: Color.fromARGB(255, 216, 216, 216),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         body: LoadingManager(
           isLoading: isLoading,
           child: Padding(
@@ -118,11 +102,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      height: 10,
+                    SizedBox(
+                      height: size.height * 0.1,
                     ),
                     const AppNameTextWidget(
-                      text: "SALLA",
+                      text: "Login",
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
                     ),
@@ -131,7 +115,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const Align(
                       alignment: Alignment.centerLeft,
-                      child: TitlesTextWidget(label: "Welcome back :)"),
+                      child: TitlesTextWidget(
+                        fontWeight: FontWeight.bold,
+                        label: "Welcome back :)",
+                        color: Color.fromARGB(255, 104, 133, 105),
+                      ),
                     ),
                     const SizedBox(
                       height: 17,
@@ -145,7 +133,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: _emailController,
                             focusNode: _emailFocusNode,
                             style: const TextStyle(
-                              color: Colors.white,
                               fontSize: 15,
                               decorationThickness: 0,
                             ),
@@ -159,12 +146,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              fillColor: Colors.black,
+                              fillColor: Colors.grey.shade200,
                               filled: true,
                               hintText: "example@gmail.com",
                               hintStyle: const TextStyle(
                                 color: AppColors.goldenColor,
-                                fontSize: 10,
+                                fontSize: 13,
                               ),
                               prefixIcon: const Icon(
                                 IconlyLight.message,
@@ -187,7 +174,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: _passwordController,
                             focusNode: _passwordFocusNode,
                             style: const TextStyle(
-                              color: Colors.white,
                               fontSize: 15,
                               decorationThickness: 0,
                             ),
@@ -201,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              fillColor: Colors.black,
+                              fillColor: Colors.grey.shade200,
                               filled: true,
                               suffixIcon: IconButton(
                                 onPressed: () {
@@ -215,9 +201,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                       : Icons.visibility_off,
                                 ),
                               ),
-                              hintText: "***********************************",
+                              hintText: "Password",
                               hintStyle: const TextStyle(
-                                  color: AppColors.goldenColor, fontSize: 6),
+                                color: AppColors.goldenColor,
+                                fontSize: 13,
+                              ),
                               prefixIcon: const Icon(
                                 IconlyLight.lock,
                                 color: AppColors.goldenColor,
@@ -231,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
                           const SizedBox(
-                            height: 16.0,
+                            height: 10.0,
                           ),
                           Align(
                             alignment: Alignment.centerRight,
@@ -248,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(
-                            height: 30.0,
+                            height: 15.0,
                           ),
                           SizedBox(
                             width: double.infinity,
@@ -264,10 +252,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 backgroundColor: AppColors.goldenColor,
                               ),
-                              icon: const Icon(Icons.login),
+                              icon: const Icon(
+                                Icons.login,
+                                size: 22,
+                              ),
                               label: const Text(
                                 "Login",
-                                style: TextStyle(fontSize: 10),
+                                style: TextStyle(fontSize: 15),
                               ),
                             ),
                           ),
@@ -276,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SubtitleTextWidget(
                             label: "or",
-                            fontSize: 10,
+                            fontSize: 15,
                           ),
                           const SizedBox(
                             height: 16.0,
@@ -298,20 +289,20 @@ class _LoginScreenState extends State<LoginScreen> {
                               Expanded(
                                 child: SizedBox(
                                   height: kBottomNavigationBarHeight,
-                                  child: ElevatedButton(
+                                  child: ElevatedButton.icon(
+                                    icon: const Icon(Icons.person),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: AppColors.goldenColor,
                                       padding: const EdgeInsets.all(12.0),
-                                      // backgroundColor: Colors.red,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
-                                          15.0,
+                                          11.0,
                                         ),
                                       ),
                                     ),
-                                    child: const Text(
-                                      " Guest ? ",
-                                      style: TextStyle(fontSize: 10),
+                                    label: const Text(
+                                      " Guest  ?",
+                                      style: TextStyle(fontSize: 15),
                                     ),
                                     onPressed: () async {
                                       Navigator.pushNamed(
@@ -325,16 +316,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                           const SizedBox(
-                            height: 16.0,
+                            height: 12.0,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const SubtitleTextWidget(
-                                label: "New here ?",
+                                label: "Already have an account ?",
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
-                                fontSize: 17,
+                                fontSize: 15,
                               ),
                               TextButton(
                                 child: const SubtitleTextWidget(

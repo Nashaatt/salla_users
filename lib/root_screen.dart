@@ -1,13 +1,15 @@
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:smart_shop/CART/cart_screen.dart';
+import 'package:smart_shop/CONSTANTS/app_colors.dart';
 import 'package:smart_shop/PROVIDERS/address_provider.dart';
 import 'package:smart_shop/PROVIDERS/cart_provider.dart';
 import 'package:smart_shop/PROVIDERS/products_provider.dart';
 import 'package:smart_shop/PROVIDERS/theme_provider.dart';
 import 'package:smart_shop/PROVIDERS/user_provider.dart';
 import 'package:smart_shop/PROVIDERS/wishList_provider.dart';
+import 'package:smart_shop/SCREENS/cart_screen.dart';
+import 'package:smart_shop/WIDGETS/text_widget.dart';
 
 import 'SCREENS/home_screen.dart';
 import 'SCREENS/profile_screen.dart';
@@ -82,43 +84,52 @@ class _RootScreenState extends State<RootScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
     return Scaffold(
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
         controller: controller,
         children: screens,
       ),
-      bottomNavigationBar: GNav(
-        curve: Curves.easeIn,
-        tabBorderRadius: 25,
+      //////////////////// themeProvider.getIsDarkTheme ? Colors.white : Colors.black //////////////////////////////
+      bottomNavigationBar: CurvedNavigationBar(
+        height: 52,
+        buttonBackgroundColor: AppColors.goldenColor,
+        animationCurve: Curves.easeIn,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        selectedIndex: currentScreen,
-        hoverColor: Color(0xffCBB26A),
-        activeColor: Color(0xffCBB26A),
-        color: themeProvider.getIsDarkTheme ? Colors.white38 : Colors.black38,
-        padding:
-            const EdgeInsets.only(top: 10, bottom: 10, right: 30, left: 30),
-        tabs: const [
-          GButton(
-            icon: Icons.star,
-          ),
-          GButton(
-            icon: Icons.search,
-          ),
-          GButton(
-            icon: Icons.shopping_cart,
-          ),
-          GButton(
-            icon: Icons.person,
-          ),
-        ],
-        onTabChange: (index) {
+        color: const Color.fromARGB(255, 16, 60, 16),
+        index: currentScreen,
+        onTap: (index) {
           setState(() {
             currentScreen = index;
           });
-
           controller.jumpToPage(currentScreen);
         },
+        items: [
+          const Icon(
+            Icons.home,
+            color: Colors.white,
+          ),
+          const Icon(
+            Icons.search,
+            color: Colors.white,
+          ),
+          Badge(
+            label: TitlesTextWidget(
+              label: "${cartProvider.getCartItems.length}",
+              fontSize: 9,
+              color: Colors.white,
+            ),
+            child: const Icon(
+              Icons.shopping_cart,
+              color: Colors.white,
+            ),
+          ),
+          const Icon(
+            Icons.person,
+            color: Colors.white,
+          ),
+        ],
       ),
     );
   }

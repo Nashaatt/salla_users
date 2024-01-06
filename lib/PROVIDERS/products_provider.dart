@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_shop/MODELS/product_model.dart';
 
 class ProductProvider with ChangeNotifier {
+  late ProductModel productModel;
   List<ProductModel> products = [];
   List<ProductModel> get getProduct {
     return products;
@@ -48,6 +49,15 @@ class ProductProvider with ChangeNotifier {
     return searchList;
   }
 
+  List<ProductModel> searchTitle({required String searchText}) {
+    List<ProductModel> searchList = products
+        .where((element) => element.productTitle!.toLowerCase().contains(
+              searchText.toLowerCase(),
+            ))
+        .toList();
+    return searchList;
+  }
+
   final productDb = FirebaseFirestore.instance.collection("products");
   Future<List<ProductModel>> fetchProducts() async {
     try {
@@ -87,7 +97,7 @@ class ProductProvider with ChangeNotifier {
   Future<List<ProductModel>> fetchProductsHorizontal() async {
     try {
       await productDb
-          .where("productDirection", isEqualTo: "Latest Arrival One")
+          .where("productDirection", isEqualTo: "New Arrival")
           .get()
           .then((productSnapshot) {
         productsproductsHorizontal.clear();
@@ -124,10 +134,19 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
+  //////////////////////get Offer
+
+  double getOffer() {
+    double total = double.parse(productModel.productOldPrice!) /
+        double.parse(productModel.productPrice);
+    return total;
+  }
+
+  ///////////////
   Future<List<ProductModel>> fetchProductsVertical() async {
     try {
       await productDb
-          .where("productDirection", isEqualTo: "Recommanded")
+          .where("productDirection", isEqualTo: "Recommanded for you")
           .get()
           .then((productSnapshot) {
         productsproductsVertical.clear();

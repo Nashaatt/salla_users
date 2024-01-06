@@ -45,7 +45,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:971833702888:android:b7285a501b5641e6b58c5d",
         "android_client_info": {
-          "package_name": "com.example.smart_shop"
+          "package_name": "com.Salla.Store"
         }
       },
       "oauth_client": [
@@ -53,15 +53,23 @@
           "client_id": "971833702888-bs0msql69n9kea22j3e0lgpjlm3a98s8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.smart_shop",
+            "package_name": "com.Salla.Store",
             "certificate_hash": "2d9e1b95972fa946a7675df31e178833ba9700d5"
+          }
+        },
+        {
+          "client_id": "971833702888-ce96jgg7e9fbn6jj3asqf1s9e9ujrrpm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.Salla.Store",
+            "certificate_hash": "eccf33c68b4e480cf41d4eb160795460d5aadec2"
           }
         },
         {
           "client_id": "971833702888-mpaqr5ef87jfamfrgc6q3ikaam6q80ee.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.smart_shop",
+            "package_name": "com.Salla.Store",
             "certificate_hash": "d212c6104e15ee30cc6eaf0cafcef0445c210485"
           }
         },

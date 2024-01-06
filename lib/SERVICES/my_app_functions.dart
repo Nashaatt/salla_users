@@ -1,83 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_shop/WIDGETS/subtitles.dart';
+import 'package:flutter/services.dart';
+import 'package:smart_shop/CONSTANTS/app_colors.dart';
+import 'package:smart_shop/WIDGETS/text_widget.dart';
 
 class MyAppFunctions {
-  static Future<void> showErrorOrWarningDialog({
-    required BuildContext context,
-    required String subtitle,
-    bool isError = true,
-    required Function fct,
-  }) async {
-    await showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            elevation: 50,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(2.0)),
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(
-                  isError ? "IMG/error.png" : "IMG/warning.png",
-                  height: 60,
-                  width: 60,
-                ),
-                const SizedBox(
-                  height: 16.0,
-                ),
-                SubtitleTextWidget(
-                  label: subtitle,
-                  fontWeight: FontWeight.normal,
-                  fontSize: 12,
-                ),
-                const SizedBox(
-                  height: 16.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Visibility(
-                      visible: !isError,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const SubtitleTextWidget(
-                          label: "Cancel",
-                          color: Colors.green,
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        fct();
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        width: 150,
-                        padding: const EdgeInsets.all(12),
-                        decoration:
-                            const BoxDecoration(color: Colors.redAccent),
-                        child: const Center(
-                          child: SubtitleTextWidget(
-                            label: "cancel",
-                            color: Colors.white,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          );
-        });
+  ////////////////////////////////App Message/////////////////////////////////
+  Future<void> globalMassage(
+      {required context, required String message}) async {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: AppColors.blueColor,
+    ));
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////IMAGE PICKER////////////////////////////////////////////////////////////////
 
   static Future<void> imagePickerDialog({
     required BuildContext context,
@@ -88,81 +25,271 @@ class MyAppFunctions {
     await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Colors.grey.shade900,
+          return Dialog(
+            backgroundColor: Colors.black,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             elevation: 40,
-            title: const Center(
-              child: Text(
-                "Choose Option",
-                style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w100,
-                    color: Colors.white),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ////////////////////////   Photo Library    /////////////////////////////////////////////
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          galleryFCT();
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const TitlesTextWidget(
+                          label: "Photo Library",
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.my_library_add,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+
+                  const Divider(
+                    color: Colors.white,
+                    endIndent: 0,
+                    indent: 0,
+                  ),
+
+                  //////////////////////////////     Take Selfie Photo   /////////////////////////////////////////////
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          cameraFCT();
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const TitlesTextWidget(
+                          label: "Take Selfie Photo",
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.camera,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                  const Divider(
+                    color: Colors.white,
+                    endIndent: 0,
+                    indent: 0,
+                  ),
+
+                  ///////////////////////////////  Delete Photo   /////////////////////////////////////////////
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          removeFCT();
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const TitlesTextWidget(
+                          label: "Delete Photo",
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const Icon(
+                        CupertinoIcons.delete,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                  /////////////////////////////////////////end
+                ],
               ),
             ),
-            content: SingleChildScrollView(
-              child: ListBody(children: [
-                TextButton.icon(
-                  onPressed: () {
-                    cameraFCT();
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  icon: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.camera,
-                      size: 20,
+          );
+        });
+  }
+
+  //////////////////////////////////////////////////////////////////////OTP DIALOG /////////////////////////////////////////////////////////////////
+  static Future<void> showOTPDialog({
+    required context,
+    required controller1,
+    required controller2,
+    required controller3,
+    required void Function()? onPressed,
+  }) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 3.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        //////////////////////////////////////    11111111111111111111111111111111111111111     ///////////////////////////////////////
+                        SizedBox(
+                          height: 60,
+                          width: 54,
+                          child: TextFormField(
+                            controller: controller1,
+                            style: const TextStyle(
+                              fontSize: 25,
+                              color: Colors.black,
+                              decorationColor: Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                              hintStyle: const TextStyle(
+                                fontSize: 25,
+                                color: Colors.white,
+                              ),
+                              hintText: "0",
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: const BorderSide(
+                                  width: 2,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            autofocus: true,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(1),
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            onChanged: (value) {
+                              if (value.length == 1) {
+                                FocusScope.of(context).nextFocus();
+                              }
+                            },
+                          ),
+                        ),
+                        ////////////////////////////////////////////////   222222222222222222222222222222222222    /////////////////////////////////////////////////
+                        SizedBox(
+                          height: 60,
+                          width: 54,
+                          child: TextFormField(
+                            controller: controller2,
+                            style: const TextStyle(
+                              fontSize: 25,
+                            ),
+                            decoration: InputDecoration(
+                              hintStyle: const TextStyle(
+                                fontSize: 25,
+                                color: Colors.white,
+                              ),
+                              hintText: "0",
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: const BorderSide(
+                                  width: 2,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(1),
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            onChanged: (value) {
+                              if (value.length == 1) {
+                                FocusScope.of(context).nextFocus();
+                              }
+                            },
+                          ),
+                        ),
+                        ///////////////////////////////////////////   333333333333333333333333333333   /////////////////////////////////////////////////////////////
+                        SizedBox(
+                          height: 60,
+                          width: 54,
+                          child: TextFormField(
+                            controller: controller3,
+                            style: const TextStyle(
+                              fontSize: 25,
+                            ),
+                            decoration: InputDecoration(
+                              hintStyle: const TextStyle(
+                                fontSize: 25,
+                                color: Colors.white,
+                              ),
+                              hintText: "0",
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: const BorderSide(
+                                  width: 2,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(1),
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            onChanged: (value) {
+                              if (value.length == 1) {
+                                FocusScope.of(context).nextFocus();
+                              }
+                            },
+                          ),
+                        ),
+
+                        //////////////////////////////////////////////444444444444444444444444////////////////////////////////////////////////////
+                      ],
                     ),
                   ),
-                  label: const SubtitleTextWidget(
-                    label: "Camera",
-                    fontSize: 10,
-                    color: Colors.white,
+                  const SizedBox(
+                    height: 30,
                   ),
-                ),
-                TextButton.icon(
-                  onPressed: () {
-                    galleryFCT();
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  icon: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.image,
-                      size: 20,
+                  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                  Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.goldenColor),
+                        onPressed: onPressed,
+                        child: const Text("Submit"),
+                      ),
                     ),
                   ),
-                  label: const SubtitleTextWidget(
-                    label: "Gallery",
-                    fontSize: 10,
-                    color: Colors.white,
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: () {
-                    removeFCT();
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  icon: const Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Icon(
-                      Icons.remove_circle,
-                      size: 20,
-                    ),
-                  ),
-                  label: const SubtitleTextWidget(
-                    label: "Remove",
-                    fontSize: 10,
-                    color: Colors.white,
-                  ),
-                ),
-              ]),
+                ],
+              ),
             ),
           );
         });

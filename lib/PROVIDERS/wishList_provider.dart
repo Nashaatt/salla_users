@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:smart_shop/CONSTANTS/app_colors.dart';
 import 'package:smart_shop/MODELS/wishList_model.dart';
 import 'package:smart_shop/SERVICES/my_app_functions.dart';
 import 'package:uuid/uuid.dart';
@@ -23,11 +21,8 @@ class WishListProvider with ChangeNotifier {
   }) async {
     final User? user = _auth.currentUser;
     if (user == null) {
-      MyAppFunctions.showErrorOrWarningDialog(
-        context: context,
-        subtitle: "Please login first",
-        fct: () {},
-      );
+      MyAppFunctions()
+          .globalMassage(context: context, message: "Please Login First");
       return;
     }
     final uid = user.uid;
@@ -41,10 +36,8 @@ class WishListProvider with ChangeNotifier {
           }
         ])
       });
-      Fluttertoast.showToast(
-          msg: "Item has been added",
-          backgroundColor: AppColors.goldenColor,
-          textColor: Colors.white);
+      MyAppFunctions()
+          .globalMassage(context: context, message: "Item Added Successfully");
     } catch (e) {
       rethrow;
     }
@@ -80,6 +73,7 @@ class WishListProvider with ChangeNotifier {
   Future<void> removeWishListItemFromFirestor({
     required String wishListId,
     required String productId,
+    required BuildContext context,
   }) async {
     final User? user = _auth.currentUser;
     try {
@@ -93,17 +87,15 @@ class WishListProvider with ChangeNotifier {
       });
       // await fetchCart();
       _whishListItems.remove(productId);
-      Fluttertoast.showToast(
-        msg: "Item has been Removed",
-        backgroundColor: AppColors.goldenColor,
-        textColor: Colors.white,
-      );
+      MyAppFunctions().globalMassage(
+          context: context, message: "Item Removed Successfully");
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> clearWishListFromFirestore() async {
+  Future<void> clearWishListFromFirestore(
+      {required BuildContext context}) async {
     final User? user = _auth.currentUser;
     try {
       await userstDb.doc(user!.uid).update({
@@ -111,11 +103,8 @@ class WishListProvider with ChangeNotifier {
       });
       // await fetchWishList();
       _whishListItems.clear();
-      Fluttertoast.showToast(
-        msg: "You cleared All WishList !",
-        backgroundColor: AppColors.goldenColor,
-        textColor: Colors.white,
-      );
+      MyAppFunctions().globalMassage(
+          context: context, message: "WishList Cleared Successfully");
     } catch (e) {
       rethrow;
     }

@@ -13,22 +13,21 @@ import 'package:smart_shop/PROVIDERS/theme_provider.dart';
 import 'package:smart_shop/PROVIDERS/user_provider.dart';
 import 'package:smart_shop/PROVIDERS/viewed_product_provider.dart';
 import 'package:smart_shop/PROVIDERS/wishList_provider.dart';
-import 'package:smart_shop/SCREENS/InnerScreens/order/order_screen.dart';
-import 'package:smart_shop/SCREENS/InnerScreens/product_datails_screen.dart';
-import 'package:smart_shop/SCREENS/InnerScreens/viewed_Recent_Screen.dart';
-import 'package:smart_shop/SCREENS/InnerScreens/wislist_screen.dart';
+import 'package:smart_shop/SCREENS/home_screen.dart';
 import 'package:smart_shop/SCREENS/search_screen.dart';
-import 'package:smart_shop/WIDGETS/AddAddressScreen.dart';
-
+import 'package:smart_shop/SIDE%20SCREENS/AddAddressScreen.dart';
+import 'package:smart_shop/SIDE%20SCREENS/order_screen.dart';
+import 'package:smart_shop/SIDE%20SCREENS/product_datails_screen.dart';
+import 'package:smart_shop/SIDE%20SCREENS/viewed_Recent_Screen.dart';
+import 'package:smart_shop/SIDE%20SCREENS/wislist_screen.dart';
 import 'package:smart_shop/firebase_options.dart';
 import 'package:smart_shop/root_screen.dart';
 
 import 'CONSTANTS/theme_data.dart';
 import 'PROVIDERS/address_provider.dart';
-import 'SCREENS/splash_screen.dart';
 
 void main() {
-  //// Handling Error in hole Application \\\\\\\
+  //////////////////////////////////////////////////////
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return Material(
       child: Container(
@@ -40,9 +39,9 @@ void main() {
                 child: Text(
               details.exception.toString(),
               style: const TextStyle(
-                fontSize: 30,
+                fontSize: 10,
                 fontWeight: FontWeight.bold,
-                color: Colors.green,
+                color: Colors.white,
               ),
             )),
           ],
@@ -53,12 +52,22 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
-    runApp(new MyApp());
+    runApp(const MyApp());
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    // TODO: implement initState
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,11 +129,13 @@ class MyApp extends StatelessWidget {
               create: (_) {
                 return OrderProvider();
               },
-            ),ChangeNotifierProvider(
+            ),
+            ChangeNotifierProvider(
               create: (_) {
                 return AddressProvider();
               },
-            ),ChangeNotifierProvider(
+            ),
+            ChangeNotifierProvider(
               create: (_) {
                 return RatingProvider();
               },
@@ -139,7 +150,7 @@ class MyApp extends StatelessWidget {
                 isDarkTheme: themeProvider.getIsDarkTheme,
                 context: context,
               ),
-              home: const SpalshScreen(), //// start  \\\\\
+              home: const RegisterScreen(), //// start  \\\\\
               routes: {
                 RootScreen.routeName: (context) => const RootScreen(),
                 ProductDetailsScreen.routName: (context) =>
@@ -154,7 +165,9 @@ class MyApp extends StatelessWidget {
                 ForgotPasswordScreen.routeName: (context) =>
                     const ForgotPasswordScreen(),
                 SearchScreen.routName: (context) => const SearchScreen(),
-                AddressEditScreen.routName: (context) => const AddressEditScreen(),
+                HomePage.routName: (context) => const HomePage(),
+                AddressEditScreen.routName: (context) =>
+                    const AddressEditScreen(),
               },
             );
           }),
@@ -162,7 +175,4 @@ class MyApp extends StatelessWidget {
       },
     );
   }
-
-  //SHA-1//D2:12:C6:10:4E:15:EE:30:CC:6E:AF:0C:AF:CE:F0:44:5C:21:04:85//
-  //version '4.4.0' apply false
 }
